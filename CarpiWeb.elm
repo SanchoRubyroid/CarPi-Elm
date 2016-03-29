@@ -18,6 +18,7 @@ import String
 
 type alias Model =
   { power: Float,
+    brakePower: Float,
     powerLevel: Float,
     turnDirection: Int
   }
@@ -27,6 +28,7 @@ initialCar : Model
 initialCar =
   {
     power = 3,
+    brakePower = 3,
     powerLevel = 0,
     turnDirection = 0
   }
@@ -37,9 +39,11 @@ update : { x : Int, y : Int } -> Model -> Model
 update axis car =
   let
     directionalPower =
-      if axis.y > 0 || ( axis.y == 0 && car.powerLevel < 0 ) then car.power else -1 * car.power
+      if axis.y > 0 || ( axis.y == 0 && car.powerLevel < 0 ) then car.power else -1*car.power
+    appliedBrakePower =
+      if axis.y == -1 && car.powerLevel > 0 || axis.y == 1 && car.powerLevel < 0 then car.brakePower * directionalPower else directionalPower
     appliedPowerLevel =
-      if axis.y == 0 && car.powerLevel == 0 then car.powerLevel else car.powerLevel + directionalPower
+      if axis.y == 0 && car.powerLevel == 0 then car.powerLevel else car.powerLevel + appliedBrakePower
     stabelizedZeroPowerLevel =
       if abs (car.powerLevel + appliedPowerLevel) < car.power then 0 else appliedPowerLevel
     getPowerLevel =
