@@ -14,7 +14,7 @@ import Time
 
 import String
 
-import CarpiTorque
+import CarpiBehavior
 
 -- CONSTANTS
 fps = 30
@@ -24,22 +24,15 @@ brakePower = 3
 -- MODEL
 
 type alias Model =
-  { power: Float,
-    brakePower: Float,
-    powerLevel: Float,
-    reversedPower: Bool,
-    turnDirection: Int
+  { torqueLevel: Float,
+    torqueReversed: Bool
   }
 
 
 initialCar : Model
 initialCar =
-  {
-    power = power,
-    brakePower = brakePower,
-    powerLevel = 0,
-    reversedPower = False,
-    turnDirection = 0
+  { torqueLevel = 0,
+    torqueReversed = False
   }
 
 -- UPDATE
@@ -65,12 +58,23 @@ update action car =
 
 applyTorque : Action -> Model -> Model
 applyTorque action car =
-  if List.any (\v -> action == v) [Accelerate, AccelerateLeft, AccelerateRight] then
-    CarpiTorque.applyAccelerate car
-  else if List.any (\v -> action == v) [Reverse, ReverseLeft, ReverseRight] then
-    CarpiTorque.applyReverse car
-  else
-    CarpiTorque.applyEngineDecelerate car
+  let
+    data =
+      { power = power,
+        powerMutliplier = brakePower,
+        level = car.torqueLevel,
+        reversedLevel = car.torqueReversed }
+    updatedData =
+      if List.any (\v -> action == v) [Accelerate, AccelerateLeft, AccelerateRight] then
+        CarpiBehavior.applyIncrease data
+      else if List.any (\v -> action == v) [Reverse, ReverseLeft, ReverseRight] then
+        CarpiBehavior.applyDecrease data
+      else
+        CarpiBehavior.applyIdle data
+  in
+    { car |
+      torqueLevel = updatedData.level,
+      torqueReversed = updatedData.reversedLevel }
 
 -- VIEW
 
