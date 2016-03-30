@@ -18,29 +18,35 @@ import CarpiBehavior
 
 -- CONSTANTS
 fps = 30
-power = 3
+torquePower = 3
 brakePower = 3
+steeringPower = 7
 
 -- MODEL
 
 type alias Model =
   { torqueLevel: Float,
-    torqueReversed: Bool
+    torqueReversed: Bool,
+    directionLevel: Float,
+    direction: Direction
   }
 
+type Direction = Straight | Left | Right
 
 initialCar : Model
 initialCar =
   { torqueLevel = 0,
-    torqueReversed = False
+    torqueReversed = False,
+    directionLevel = 0,
+    direction = Straight
   }
 
 -- UPDATE
 
 type Action =
   NoOp |
-  Left |
-  Right |
+  TurnLeft |
+  TurnRight |
   Accelerate |
   AccelerateLeft |
   AccelerateRight |
@@ -53,28 +59,57 @@ update : Action -> Model -> Model
 update action car =
   car
     |> applyTorque action
-    --|> applyDirection action
+    |> applyDirection action
 
 
 applyTorque : Action -> Model -> Model
 applyTorque action car =
   let
     data =
-      { power = power,
+      { power = torquePower,
         powerMutliplier = brakePower,
         level = car.torqueLevel,
         reversedLevel = car.torqueReversed }
+
     updatedData =
-      if List.any (\v -> action == v) [Accelerate, AccelerateLeft, AccelerateRight] then
-        CarpiBehavior.applyIncrease data
-      else if List.any (\v -> action == v) [Reverse, ReverseLeft, ReverseRight] then
-        CarpiBehavior.applyDecrease data
-      else
-        CarpiBehavior.applyIdle data
+      applyBehavior [Accelerate, AccelerateLeft, AccelerateRight] [Reverse, ReverseLeft, ReverseRight] action data
   in
     { car |
       torqueLevel = updatedData.level,
       torqueReversed = updatedData.reversedLevel }
+
+applyDirection : Action -> Model -> Model
+applyDirection action car =
+  let
+    data =
+      { power = steeringPower,
+        powerMutliplier = 1,
+        level = car.directionLevel,
+        reversedLevel = (car.direction == Left) }
+
+    updatedData =
+      applyBehavior [TurnRight, ReverseRight, AccelerateRight] [TurnLeft, ReverseLeft, AccelerateLeft] action data
+
+    updatedDirection =
+      if updatedData.reversedLevel then
+        Left
+      else if updatedData.level == 0 then
+        Straight
+      else
+        Right
+  in
+    { car |
+      directionLevel = updatedData.level,
+      direction = updatedDirection }
+
+applyBehavior : List Action -> List Action -> Action -> CarpiBehavior.Data -> CarpiBehavior.Data
+applyBehavior increaseList decreaseList action data =
+  if List.any (\v -> action == v) increaseList then
+    CarpiBehavior.applyIncrease data
+  else if List.any (\v -> action == v) decreaseList then
+    CarpiBehavior.applyDecrease data
+  else
+    CarpiBehavior.applyIdle data
 
 -- VIEW
 
@@ -102,8 +137,8 @@ input =
     delta = Time.fps fps
     toAction axis =
       case (axis.x, axis.y) of
-        (1,0) -> Right
-        (-1,0) -> Left
+        (1,0) -> TurnRight
+        (-1,0) -> TurnLeft
         (0,1) -> Accelerate
         (1,1) -> AccelerateRight
         (-1,1) -> AccelerateLeft
