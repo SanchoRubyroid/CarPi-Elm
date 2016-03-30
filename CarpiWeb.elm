@@ -16,6 +16,11 @@ import String
 
 import CarpiTorque
 
+-- CONSTANTS
+fps = 30
+power = 3
+brakePower = 3
+
 -- MODEL
 
 type alias Model =
@@ -30,8 +35,8 @@ type alias Model =
 initialCar : Model
 initialCar =
   {
-    power = 3,
-    brakePower = 3,
+    power = power,
+    brakePower = brakePower,
     powerLevel = 0,
     reversedPower = False,
     turnDirection = 0
@@ -90,9 +95,9 @@ drawCanvas w h =
 input : Signal Action
 input =
   let
-    delta = Time.fps 30
-    toAction n =
-      case (n.x, n.y) of
+    delta = Time.fps fps
+    toAction axis =
+      case (axis.x, axis.y) of
         (1,0) -> Right
         (-1,0) -> Left
         (0,1) -> Accelerate
