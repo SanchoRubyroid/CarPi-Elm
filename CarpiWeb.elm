@@ -14,6 +14,8 @@ import Time
 
 import String
 
+import CarpiTorque
+
 -- MODEL
 
 type alias Model =
@@ -58,61 +60,13 @@ update action car =
 
 applyTorque : Action -> Model -> Model
 applyTorque action car =
-  let
-    decreasePowerLevel brakeApplied =
-      let
-        currenCarPower =
-          if brakeApplied then car.brakePower * car.power else car.power
-      in
-        (car.powerLevel - currenCarPower) |> normalizedPowerLevel currenCarPower
+  if List.any (\v -> action == v) [Accelerate, AccelerateLeft, AccelerateRight] then
+    CarpiTorque.applyAccelerate car
+  else if List.any (\v -> action == v) [Reverse, ReverseLeft, ReverseRight] then
+    CarpiTorque.applyReverse car
+  else
+    CarpiTorque.applyEngineDecelerate car
 
-    increasePowerLevel =
-      (car.powerLevel + car.power) |> normalizedPowerLevel car.power
-
-    normalizedPowerLevel currenCarPower newPowerLevel =
-      let
-        powerLevel =
-          if abs (car.powerLevel + newPowerLevel) < currenCarPower then 0 else newPowerLevel
-      in
-        clamp 0 100 powerLevel
-
-    newReversedPower newPowerLevel =
-      if newPowerLevel == 0 then False else car.reversedPower
-  in
-    if action == NoOp then
-      let
-        newPowerLevel =
-          if car.powerLevel == 0 then 0 else decreasePowerLevel False
-      in
-        { car |
-          powerLevel = newPowerLevel,
-          reversedPower = newReversedPower newPowerLevel }
-    else if List.any (\v -> action == v) [Accelerate, AccelerateLeft, AccelerateRight] then
-      let
-        newPowerLevel =
-          if car.reversedPower then
-            decreasePowerLevel True
-          else
-            increasePowerLevel
-      in
-        { car |
-          powerLevel = newPowerLevel,
-          reversedPower = newReversedPower newPowerLevel }
-    else if List.any (\v -> action == v) [Reverse, ReverseLeft, ReverseRight] then
-      let
-        newPowerLevel =
-          if car.reversedPower then
-            increasePowerLevel
-          else
-            decreasePowerLevel True
-        revReversedPower =
-          if car.powerLevel == 0 then True else car.reversedPower
-      in
-        { car |
-          powerLevel = newPowerLevel,
-          reversedPower = revReversedPower }
-      else
-        car
 -- VIEW
 
 view : (Int, Int) -> Model -> Element
