@@ -1,4 +1,4 @@
-module CarpiBehavior where
+module CarPiBehavior where
 
 type alias Data =
   { power: Float,

@@ -1,4 +1,4 @@
-module CarpiWeb where
+module CarPi where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -14,7 +14,7 @@ import Time
 
 import String
 
-import CarpiBehavior
+import CarPiBehavior
 
 -- CONSTANTS
 fps = 30
@@ -102,14 +102,14 @@ applyDirection action car =
       directionLevel = updatedData.level,
       direction = updatedDirection }
 
-applyBehavior : List Action -> List Action -> Action -> CarpiBehavior.Data -> CarpiBehavior.Data
+applyBehavior : List Action -> List Action -> Action -> CarPiBehavior.Data -> CarPiBehavior.Data
 applyBehavior increaseList decreaseList action data =
   if List.any (\v -> action == v) increaseList then
-    CarpiBehavior.applyIncrease data
+    CarPiBehavior.applyIncrease data
   else if List.any (\v -> action == v) decreaseList then
-    CarpiBehavior.applyDecrease data
+    CarPiBehavior.applyDecrease data
   else
-    CarpiBehavior.applyIdle data
+    CarPiBehavior.applyIdle data
 
 -- VIEW
 
