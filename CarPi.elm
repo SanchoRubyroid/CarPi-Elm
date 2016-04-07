@@ -129,6 +129,12 @@ drawCanvas w h =
   rect w h
     |> filled gray
 
+-- PORTS
+
+port torqueLevel : Signal Float
+port torqueLevel =
+  Signal.map .torqueLevel model
+
 -- SIGNALS
 
 input : Signal Action
