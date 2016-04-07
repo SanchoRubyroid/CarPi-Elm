@@ -17,10 +17,10 @@ import String
 import CarPiBehavior
 
 -- CONSTANTS
-fps = 30
-torquePower = 3
+fps = 60
+torquePower = 1
 brakePower = 3
-steeringPower = 7
+steeringPower = 4.5
 
 -- MODEL
 
@@ -131,9 +131,22 @@ drawCanvas w h =
 
 -- PORTS
 
-port torqueLevel : Signal Float
-port torqueLevel =
-  Signal.map .torqueLevel model
+port externalModel : Signal { torqueLevel: Float, torqueReversed: Bool, directionLevel: Float, direction: Int}
+port externalModel =
+  let
+    normalizedDirection direction =
+      case direction of
+        Straight -> 0
+        Left -> -1
+        Right -> 1
+    normalizedModel model =
+      { torqueLevel = model.torqueLevel,
+        torqueReversed = model.torqueReversed,
+        directionLevel = model.directionLevel,
+        direction = normalizedDirection(model.direction)
+      }
+  in
+    Signal.map normalizedModel(model)
 
 -- SIGNALS
 
