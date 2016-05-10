@@ -10770,7 +10770,7 @@ Elm.CarPi.make = function (_elm) {
    var Straight = {ctor: "Straight"};
    var initialCar = {torqueLevel: 0,torqueReversed: false,directionLevel: 0,direction: Straight};
    var Model = F4(function (a,b,c,d) {    return {torqueLevel: a,torqueReversed: b,directionLevel: c,direction: d};});
-   var steeringPower = 4.5;
+   var steeringPower = 5;
    var applyDirection = F2(function (action,car) {
       var data = {power: steeringPower,powerMutliplier: 1,level: car.directionLevel,reversedLevel: _U.eq(car.direction,Left)};
       var updatedData = A4(applyBehavior,_U.list([TurnRight,ReverseRight,AccelerateRight]),_U.list([TurnLeft,ReverseLeft,AccelerateLeft]),action,data);
@@ -10778,7 +10778,7 @@ Elm.CarPi.make = function (_elm) {
       return _U.update(car,{directionLevel: updatedData.level,direction: updatedDirection});
    });
    var brakePower = 3;
-   var torquePower = 1;
+   var torquePower = 20;
    var applyTorque = F2(function (action,car) {
       var data = {power: torquePower,powerMutliplier: brakePower,level: car.torqueLevel,reversedLevel: car.torqueReversed};
       var updatedData = A4(applyBehavior,_U.list([Accelerate,AccelerateLeft,AccelerateRight]),_U.list([Reverse,ReverseLeft,ReverseRight]),action,data);

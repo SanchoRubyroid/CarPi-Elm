@@ -18,9 +18,9 @@ import CarPiBehavior
 
 -- CONSTANTS
 fps = 60
-torquePower = 1
+torquePower = 20
 brakePower = 3
-steeringPower = 4.5
+steeringPower = 5
 
 -- MODEL
 
