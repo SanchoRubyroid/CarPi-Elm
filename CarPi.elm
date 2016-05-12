@@ -113,21 +113,9 @@ applyBehavior increaseList decreaseList action data =
 
 -- VIEW
 
-view : (Int, Int) -> Model -> Element
-view (w, h) car =
-  let
-    (w', h') = (toFloat w, toFloat h)
-  in
-    collage w h
-      [ drawCanvas w' h',
-        toForm (show car)
-      ]
-
-
-drawCanvas : Float -> Float -> Form
-drawCanvas w h =
-  rect w h
-    |> filled gray
+view : Model -> Html
+view car =
+  div [] []
 
 -- PORTS
 
@@ -175,6 +163,6 @@ model =
   Signal.foldp update initialCar input
 
 
-main : Signal Element
+main : Signal Html
 main =
-  Signal.map2 view Window.dimensions model
+  Signal.map view model

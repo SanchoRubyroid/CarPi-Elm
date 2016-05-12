@@ -10727,28 +10727,16 @@ Elm.CarPi.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $CarPiBehavior = Elm.CarPiBehavior.make(_elm),
-   $Color = Elm.Color.make(_elm),
    $Debug = Elm.Debug.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Html = Elm.Html.make(_elm),
    $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Window = Elm.Window.make(_elm);
+   $Time = Elm.Time.make(_elm);
    var _op = {};
-   var drawCanvas = F2(function (w,h) {    return A2($Graphics$Collage.filled,$Color.gray,A2($Graphics$Collage.rect,w,h));});
-   var view = F2(function (_p0,car) {
-      var _p1 = _p0;
-      var _p4 = _p1._0;
-      var _p3 = _p1._1;
-      var _p2 = {ctor: "_Tuple2",_0: $Basics.toFloat(_p4),_1: $Basics.toFloat(_p3)};
-      var w$ = _p2._0;
-      var h$ = _p2._1;
-      return A3($Graphics$Collage.collage,_p4,_p3,_U.list([A2(drawCanvas,w$,h$),$Graphics$Collage.toForm($Graphics$Element.show(car))]));
-   });
+   var view = function (car) {    return A2($Html.div,_U.list([]),_U.list([]));};
    var applyBehavior = F4(function (increaseList,decreaseList,action,data) {
       return A2($List.any,function (v) {    return _U.eq(action,v);},increaseList) ? $CarPiBehavior.applyIncrease(data) : A2($List.any,
       function (v) {
@@ -10788,27 +10776,27 @@ Elm.CarPi.make = function (_elm) {
    var fps = 60;
    var input = function () {
       var toAction = function (axis) {
-         var _p5 = {ctor: "_Tuple2",_0: axis.x,_1: axis.y};
-         _v1_8: do {
-            if (_p5.ctor === "_Tuple2") {
-                  switch (_p5._0)
-                  {case 0: switch (_p5._1)
+         var _p0 = {ctor: "_Tuple2",_0: axis.x,_1: axis.y};
+         _v0_8: do {
+            if (_p0.ctor === "_Tuple2") {
+                  switch (_p0._0)
+                  {case 0: switch (_p0._1)
                        {case 1: return Accelerate;
                           case -1: return Reverse;
-                          default: break _v1_8;}
-                     case 1: switch (_p5._1)
+                          default: break _v0_8;}
+                     case 1: switch (_p0._1)
                        {case 0: return TurnRight;
                           case 1: return AccelerateRight;
                           case -1: return ReverseRight;
-                          default: break _v1_8;}
-                     case -1: switch (_p5._1)
+                          default: break _v0_8;}
+                     case -1: switch (_p0._1)
                        {case 0: return TurnLeft;
                           case 1: return AccelerateLeft;
                           case -1: return ReverseLeft;
-                          default: break _v1_8;}
-                     default: break _v1_8;}
+                          default: break _v0_8;}
+                     default: break _v0_8;}
                } else {
-                  break _v1_8;
+                  break _v0_8;
                }
          } while (false);
          return NoOp;
@@ -10824,8 +10812,8 @@ Elm.CarPi.make = function (_elm) {
    },
    function () {
       var normalizedDirection = function (direction) {
-         var _p6 = direction;
-         switch (_p6.ctor)
+         var _p1 = direction;
+         switch (_p1.ctor)
          {case "Straight": return 0;
             case "Left": return -1;
             default: return 1;}
@@ -10838,7 +10826,7 @@ Elm.CarPi.make = function (_elm) {
       };
       return A2($Signal.map,normalizedModel,model);
    }());
-   var main = A3($Signal.map2,view,$Window.dimensions,model);
+   var main = A2($Signal.map,view,model);
    return _elm.CarPi.values = {_op: _op
                               ,fps: fps
                               ,torquePower: torquePower
@@ -10863,7 +10851,6 @@ Elm.CarPi.make = function (_elm) {
                               ,applyDirection: applyDirection
                               ,applyBehavior: applyBehavior
                               ,view: view
-                              ,drawCanvas: drawCanvas
                               ,input: input
                               ,model: model
                               ,main: main};
